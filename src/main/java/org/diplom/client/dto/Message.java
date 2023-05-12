@@ -8,6 +8,10 @@ public class Message {
 
     }
 
+    public Message(String message) {
+        this.message = message;
+    }
+
     public Message(Integer code, String message) {
         this.code = code;
         this.message = message;

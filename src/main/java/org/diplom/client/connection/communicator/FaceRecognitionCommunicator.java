@@ -40,7 +40,7 @@ public class FaceRecognitionCommunicator extends DefaultCommutator {
 
     public ScriptMessage askForScriptAndNotify(String hardwareSerialNumber) {
         ResponseEntity<ScriptMessage> response = restTemplate.exchange(
-                getSessionManager().getURLByKey("notify") + "?hardwareSerialNumber=" + hardwareSerialNumber,
+                getSessionManager().getURLByKey("notify") + "?needScriptHWSN=" + hardwareSerialNumber,
                 HttpMethod.GET, new HttpEntity<String>(createHeaders()), ScriptMessage.class);
         return response.getBody();
     }

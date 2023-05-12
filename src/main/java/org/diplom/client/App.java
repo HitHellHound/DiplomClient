@@ -17,9 +17,11 @@ public class App {
         SessionCommunicator sessionCommunicator = SPRING_CONTEXT.getBean("sessionCommunicator", SessionCommunicator.class);
         FaceRecognitionCommunicator faceRecognitionCommunicator = SPRING_CONTEXT.getBean("faceRecognitionCommunicator", FaceRecognitionCommunicator.class);
         SessionManager sessionManager = SPRING_CONTEXT.getBean("sessionManager", SessionManager.class);
+        LocalEnvManager localEnvManager = SPRING_CONTEXT.getBean("localEnvManager", LocalEnvManager.class);
 
         if (!sessionManager.loadAPI()) {
-            if (!sessionCommunicator.downloadServerConfigs("http://localhost:8080/start")) {
+            localEnvManager.saveAPI(sessionCommunicator.downloadServerConfigs("http://localhost:8080/start").getMessage());
+            if (!sessionManager.loadAPI()) {
                 System.exit(10);
             }
         }
