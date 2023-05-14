@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultCommutator implements Communicator {
     @Autowired
-    private SessionManager sessionManager;
+    protected SessionManager sessionManager;
 
     @Override
     public HttpHeaders createHeaders() {

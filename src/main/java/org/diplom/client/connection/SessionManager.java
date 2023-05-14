@@ -11,8 +11,9 @@ public class SessionManager {
     @Autowired
     private LocalEnvManager fileManager;
     private List<String> cookies;
-    private String clientPrivateKey;
-    private String serverPublicKey;
+    private byte[] clientPrivateKey;
+    private byte[] clientPublicKey;
+    private byte[] serverPublicKey;
     private Map<String, String> API;
 
     public boolean loadAPI() {
@@ -45,19 +46,27 @@ public class SessionManager {
         this.cookies = cookies;
     }
 
-    public String getClientPrivateKey() {
+    public byte[] getClientPrivateKey() {
         return clientPrivateKey;
     }
 
-    public void setClientPrivateKey(String clientPrivateKey) {
+    public void setClientPrivateKey(byte[] clientPrivateKey) {
         this.clientPrivateKey = clientPrivateKey;
     }
 
-    public String getServerPublicKey() {
+    public byte[] getClientPublicKey() {
+        return clientPublicKey;
+    }
+
+    public void setClientPublicKey(byte[] clientPublicKey) {
+        this.clientPublicKey = clientPublicKey;
+    }
+
+    public byte[] getServerPublicKey() {
         return serverPublicKey;
     }
 
-    public void setServerPublicKey(String serverPublicKey) {
+    public void setServerPublicKey(byte[] serverPublicKey) {
         this.serverPublicKey = serverPublicKey;
     }
 }

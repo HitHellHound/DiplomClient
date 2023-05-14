@@ -3,7 +3,14 @@ package org.diplom.client;
 import org.diplom.client.connection.*;
 import org.diplom.client.connection.communicator.FaceRecognitionCommunicator;
 import org.diplom.client.connection.communicator.SessionCommunicator;
+import org.diplom.client.crypto.CryptoManager;
+import org.diplom.client.crypto.GOST28147_89;
+import org.diplom.client.crypto.GOST28147_89_Mode;
+import org.diplom.client.dto.Message;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * Hello world!
@@ -19,6 +26,8 @@ public class App {
         SessionManager sessionManager = SPRING_CONTEXT.getBean("sessionManager", SessionManager.class);
         LocalEnvManager localEnvManager = SPRING_CONTEXT.getBean("localEnvManager", LocalEnvManager.class);
 
+        CryptoManager cryptoManager = SPRING_CONTEXT.getBean("cryptoManager", CryptoManager.class);
+
         if (!sessionManager.loadAPI()) {
             localEnvManager.saveAPI(sessionCommunicator.downloadServerConfigs("http://localhost:8080/start").getMessage());
             if (!sessionManager.loadAPI()) {
@@ -27,7 +36,6 @@ public class App {
         }
 
         sessionCommunicator.createSession();
-        System.out.println(sessionCommunicator.loginByAuthToken("AuthToken"));
-        System.out.println(sessionCommunicator.loginByCreditionals("testUser", "password"));
+        System.out.println(sessionCommunicator.loginByAuthToken("NIGGERS_PIDORS"));
     }
 }

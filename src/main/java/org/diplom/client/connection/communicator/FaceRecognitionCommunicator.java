@@ -17,7 +17,7 @@ public class FaceRecognitionCommunicator extends DefaultCommutator {
 
     public ScriptMessage startFaceRegistration(String hardwareSerialNumber) {
         ResponseEntity<ScriptMessage> response = restTemplate.exchange(
-                getSessionManager().getURLByKey("registration") + "?hardwareSerialNumber=" + hardwareSerialNumber,
+                sessionManager.getURLByKey("registration") + "?hardwareSerialNumber=" + hardwareSerialNumber,
                 HttpMethod.GET, new HttpEntity<String>(createHeaders()), ScriptMessage.class);
         return response.getBody();
     }
@@ -26,21 +26,21 @@ public class FaceRecognitionCommunicator extends DefaultCommutator {
         Message message = new Message();
         message.setMessage(faceVector);
         ResponseEntity<Message> response = restTemplate.exchange(
-                getSessionManager().getURLByKey("registration") + "?hardwareSerialNumber=" + hardwareSerialNumber,
+                sessionManager.getURLByKey("registration") + "?hardwareSerialNumber=" + hardwareSerialNumber,
                 HttpMethod.POST, new HttpEntity<>(message, createHeaders()), Message.class);
         return response.getBody();
     }
 
     public ScriptMessage notifyServer() {
         ResponseEntity<ScriptMessage> response = restTemplate.exchange(
-                getSessionManager().getURLByKey("notify"), HttpMethod.GET,
+                sessionManager.getURLByKey("notify"), HttpMethod.GET,
                 new HttpEntity<String>(createHeaders()), ScriptMessage.class);
         return response.getBody();
     }
 
     public ScriptMessage askForScriptAndNotify(String hardwareSerialNumber) {
         ResponseEntity<ScriptMessage> response = restTemplate.exchange(
-                getSessionManager().getURLByKey("notify") + "?needScriptHWSN=" + hardwareSerialNumber,
+                sessionManager.getURLByKey("notify") + "?needScriptHWSN=" + hardwareSerialNumber,
                 HttpMethod.GET, new HttpEntity<String>(createHeaders()), ScriptMessage.class);
         return response.getBody();
     }
@@ -49,7 +49,7 @@ public class FaceRecognitionCommunicator extends DefaultCommutator {
         RecognitionMessage message = new RecognitionMessage();
         message.setEmbeddedFaceVectors(embeddedFaceVectors);
         ResponseEntity<Message> response = restTemplate.exchange(
-                getSessionManager().getURLByKey("recognition"),
+                sessionManager.getURLByKey("recognition"),
                 HttpMethod.POST, new HttpEntity<>(message, createHeaders()), Message.class);
         return response.getBody();
     }
