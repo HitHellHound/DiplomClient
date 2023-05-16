@@ -1,5 +1,6 @@
 package org.diplom.client.connection.communicator;
 
+import org.diplom.client.crypto.CryptoManager;
 import org.diplom.client.dto.Message;
 import org.diplom.client.dto.RecognitionMessage;
 import org.diplom.client.dto.ScriptMessage;
@@ -8,17 +9,24 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
 public class FaceRecognitionCommunicator extends DefaultCommutator {
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private CryptoManager cryptoManager;
 
     public ScriptMessage startFaceRegistration(String hardwareSerialNumber) {
+        Message message = new Message(
+                cryptoManager.sessionEncryption(hardwareSerialNumber.getBytes(StandardCharsets.UTF_8)));
+
         ResponseEntity<ScriptMessage> response = restTemplate.exchange(
-                sessionManager.getURLByKey("registration") + "?hardwareSerialNumber=" + hardwareSerialNumber,
-                HttpMethod.GET, new HttpEntity<String>(createHeaders()), ScriptMessage.class);
+                sessionManager.getURLByKey("registration"),
+                HttpMethod.POST, new HttpEntity<>(message, createHeaders()), ScriptMessage.class);
+
         return response.getBody();
     }
 
@@ -27,7 +35,7 @@ public class FaceRecognitionCommunicator extends DefaultCommutator {
         message.setMessage(faceVector);
         ResponseEntity<Message> response = restTemplate.exchange(
                 sessionManager.getURLByKey("registration") + "?hardwareSerialNumber=" + hardwareSerialNumber,
-                HttpMethod.POST, new HttpEntity<>(message, createHeaders()), Message.class);
+                HttpMethod.PUT, new HttpEntity<>(message, createHeaders()), Message.class);
         return response.getBody();
     }
 

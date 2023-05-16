@@ -7,9 +7,11 @@ import org.diplom.client.crypto.CryptoManager;
 import org.diplom.client.crypto.GOST28147_89;
 import org.diplom.client.crypto.GOST28147_89_Mode;
 import org.diplom.client.dto.Message;
+import org.diplom.client.dto.ScriptMessage;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 /**
@@ -35,7 +37,10 @@ public class App {
             }
         }
 
+
         sessionCommunicator.createSession();
-        System.out.println(sessionCommunicator.loginByAuthToken("NIGGERS_PIDORS"));
+        System.out.println(sessionCommunicator.loginByAuthToken("AuthTokenMotherBoardToken"));
+        ScriptMessage scriptMessage = faceRecognitionCommunicator.startFaceRegistration("MyABOBA");
+        localEnvManager.saveFaceRegistrationFile(scriptMessage.getMessage());
     }
 }

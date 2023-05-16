@@ -1,8 +1,10 @@
 package org.diplom.client.connection.communicator;
 
 import org.diplom.client.crypto.CryptoManager;
+import org.diplom.client.crypto.GOST28147_89;
 import org.diplom.client.dto.AuthMessage;
 import org.diplom.client.dto.Message;
+import org.diplom.client.dto.ScriptMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -45,24 +47,41 @@ public class SessionCommunicator extends DefaultCommutator {
         cryptoManager.initSessionCiphers();
     }
 
-    public Message loginByCreditionals(String identifier, String password) {
+    public ScriptMessage loginByCreditionals(String identifier, String password) {
         String encryptedIdentifier = cryptoManager.sessionEncryption(identifier.getBytes(StandardCharsets.UTF_8));
         String encryptedPassword = cryptoManager.sessionEncryption(password.getBytes(StandardCharsets.UTF_8));
 
         AuthMessage message = new AuthMessage(encryptedIdentifier, encryptedPassword);
 
-        ResponseEntity<Message> response = restTemplate.exchange(sessionManager.getURLByKey("login"), HttpMethod.POST,
-                new HttpEntity<>(message, createHeaders()), Message.class);
+        ResponseEntity<ScriptMessage> response = restTemplate.exchange(sessionManager.getURLByKey("login"), HttpMethod.POST,
+                new HttpEntity<>(message, createHeaders()), ScriptMessage.class);
+
+        if (response.getBody().getCode() == 200)
+            createSessionGostCipher(response.getBody());
 
         return response.getBody();
     }
 
-    public Message loginByAuthToken(String authToken) {
+    public ScriptMessage loginByAuthToken(String authToken) {
         Message message = new Message(cryptoManager.sessionEncryption(authToken.getBytes(StandardCharsets.UTF_8)));
 
-        ResponseEntity<Message> response = restTemplate.exchange(sessionManager.getURLByKey("login"), HttpMethod.PUT,
-                new HttpEntity<>(message, createHeaders()), Message.class);
+        ResponseEntity<ScriptMessage> response = restTemplate.exchange(sessionManager.getURLByKey("login"), HttpMethod.PUT,
+                new HttpEntity<>(message, createHeaders()), ScriptMessage.class);
+
+        if (response.getBody().getCode() == 200)
+            createSessionGostCipher(response.getBody());
 
         return response.getBody();
+    }
+
+    private void createSessionGostCipher(ScriptMessage message) {
+        byte[] key = Base64.getDecoder().decode(message.getScriptKey());
+        byte[][] table = new byte[8][16];
+        for (int i = 0; i < 8; i++) {
+            table[i] = Base64.getDecoder().decode(message.getScriptTable().get(i));
+        }
+        byte[] syncMessage = Base64.getDecoder().decode(message.getScriptSyncMessage());
+
+        sessionManager.setSessionGostCipher(new GOST28147_89(key, table, syncMessage));
     }
 }

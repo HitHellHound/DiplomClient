@@ -1,13 +1,33 @@
 package org.diplom.client.dto;
 
-public class ScriptMessage extends Message {
-    private String scriptPublicKey;
+import java.util.List;
 
-    public String getScriptPublicKey() {
-        return scriptPublicKey;
+public class ScriptMessage extends Message {
+    private String scriptKey;
+    private List<String> scriptTable;
+    private String scriptSyncMessage;
+
+    public String getScriptKey() {
+        return scriptKey;
     }
 
-    public void setScriptPublicKey(String scriptPublicKey) {
-        this.scriptPublicKey = scriptPublicKey;
+    public void setScriptKey(String scriptKey) {
+        this.scriptKey = scriptKey;
+    }
+
+    public List<String> getScriptTable() {
+        return scriptTable;
+    }
+
+    public void setScriptTable(List<String> scriptTable) {
+        this.scriptTable = scriptTable;
+    }
+
+    public String getScriptSyncMessage() {
+        return scriptSyncMessage;
+    }
+
+    public void setScriptSyncMessage(String scriptSyncMessage) {
+        this.scriptSyncMessage = scriptSyncMessage;
     }
 }

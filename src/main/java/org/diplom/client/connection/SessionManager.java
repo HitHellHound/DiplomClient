@@ -1,5 +1,6 @@
 package org.diplom.client.connection;
 
+import org.diplom.client.crypto.GOST28147_89;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,8 @@ public class SessionManager {
     private byte[] clientPrivateKey;
     private byte[] clientPublicKey;
     private byte[] serverPublicKey;
+    private GOST28147_89 sessionGostCipher;
+    private GOST28147_89 scriptGostCipher;
     private Map<String, String> API;
 
     public boolean loadAPI() {
@@ -68,5 +71,21 @@ public class SessionManager {
 
     public void setServerPublicKey(byte[] serverPublicKey) {
         this.serverPublicKey = serverPublicKey;
+    }
+
+    public GOST28147_89 getSessionGostCipher() {
+        return sessionGostCipher;
+    }
+
+    public void setSessionGostCipher(GOST28147_89 sessionGostCipher) {
+        this.sessionGostCipher = sessionGostCipher;
+    }
+
+    public GOST28147_89 getScriptGostCipher() {
+        return scriptGostCipher;
+    }
+
+    public void setScriptGostCipher(GOST28147_89 scriptGostCipher) {
+        this.scriptGostCipher = scriptGostCipher;
     }
 }

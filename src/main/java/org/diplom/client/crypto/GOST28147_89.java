@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GOST28147_89 {
     private byte[][] key;
@@ -15,7 +16,7 @@ public class GOST28147_89 {
     public static int SEVEN_BIT_MASK = 0b1111111;
     public static int EIGHT_BIT_MASK = 0b11111111;
 
-    public GOST28147_89(byte[] rawKey, byte[][] rawTable, byte[] syncMessage) throws Exception {
+    public GOST28147_89(byte[] rawKey, byte[][] rawTable, byte[] syncMessage) {
         key = transformKey(rawKey);
         table = transformTable(rawTable);
         this.syncMessage = syncMessage;
@@ -307,11 +308,8 @@ public class GOST28147_89 {
         return informationInByte;
     }
 
-    public static byte[][] transformKey(byte[] rawKey) throws Exception {
+    public static byte[][] transformKey(byte[] rawKey) {
         byte[][] key = new byte[8][4];
-
-        if (rawKey.length != 32)
-            throw new Exception("Wrong size of key!");
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 4; j++) {
@@ -351,5 +349,24 @@ public class GOST28147_89 {
             size = (information.size() - 1) * 8 + information.get(information.size() - 1).length;
         }
         return size;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder("GOST28147_89{");
+
+        result.append("key=[");
+        for (int i = 0; i < key.length; i++)
+            result.append(Arrays.toString(key[i]) + ", ");
+        result.append("],\n");
+
+        result.append("table=[");
+        for (int i = 0; i < table.length; i++)
+            result.append(Arrays.toString(table[i]) + ",\n");
+        result.append("],\n");
+
+        result.append("syncMessage=" + Arrays.toString(syncMessage) + '}');
+
+        return result.toString();
     }
 }
