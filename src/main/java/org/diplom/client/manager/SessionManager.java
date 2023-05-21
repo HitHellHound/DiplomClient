@@ -1,4 +1,4 @@
-package org.diplom.client.connection;
+package org.diplom.client.manager;
 
 import org.diplom.client.crypto.GOST28147_89;
 import org.springframework.beans.factory.annotation.Autowired;

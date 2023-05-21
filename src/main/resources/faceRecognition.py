@@ -26,11 +26,6 @@ if cap is None or not cap.isOpened():
     exit(1)
 
 
-# Read input args
-py_script, person_vector_str = argv
-person_vector = ast.literal_eval(person_vector_str)
-
-
 # Optimize GPU memory
 gpus = tf.config.list_physical_devices('GPU')
 if gpus:
@@ -41,8 +36,7 @@ if gpus:
         logical_gpus = tf.config.list_logical_devices('GPU')
     except RuntimeError as e:
         # Memory growth must be set before GPUs have been initialized
-        print(e)
-
+        print(e, '\n')
 
 # Main variables
 face_detector_name = "mediapipe"
@@ -51,11 +45,9 @@ face_detector = face_detection = FaceDetector.build_model(face_detector_name)
 vector_model_name = "Facenet512"
 vector_model = DeepFace.build_model(vector_model_name)
 
-metric_met = 'cosine'
-threshold = 0.4
-
 frame_counter = 0
-
+frames_embedded = 0
+frames_embedded_threshold = 5
 
 # Detect faces method
 def detect_faces(face_detector_inner, img, align=True):
@@ -132,7 +124,7 @@ def reshape_image(image, target_size):
         return img_pixels
 
 
-def verify_face(face_to_verify):
+def embed_face(face_to_verify):
     gpus_v = tf.config.list_physical_devices('GPU')
     if gpus:
         try:
@@ -141,14 +133,11 @@ def verify_face(face_to_verify):
                 tf.config.experimental.set_memory_growth(gpu_v, True)
         except RuntimeError as e:
             # Memory growth must be set before GPUs have been initialized
-            print(e)
+            print(e, '\n')
     target_size = functions.find_target_size(model_name=vector_model_name)
     reshaped_img = reshape_image(face_to_verify, target_size)
     vector_to_verify = vector_model.predict(reshaped_img, verbose=0)[0].tolist()
-    print(vector_to_verify)
-    distance = dst.findCosineDistance(vector_to_verify, person_vector)
-    print(dst.findCosineDistance(vector_to_verify, person_vector))
-    print(distance <= threshold)
+    print(vector_to_verify, '\n')
 
 
 # Main loop
@@ -159,12 +148,26 @@ while True:
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         face_objs = detect_faces(face_detector, rgb_frame)
         if len(face_objs) != 0:
+
+            if len(face_objs) > 3:
+                RED = (0, 0, 255)
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                font_size = 0.5
+                font_thickness = 1
+                text = 'There are more than one face on camera'
+                x, y = 0, 15
+                cv2.putText(frame, text, (x, y), font, font_size, RED, font_thickness, cv2.LINE_AA)
+
+            if frame_counter % 24 == 0 and len(face_objs) <= 3:
+                frames_embedded += 1
+                if frames_embedded > frames_embedded_threshold:
+                    break
+
             for face_img, region, _ in face_objs:
                 cv2.rectangle(frame, (region[0], region[1]), (region[0] + region[2], region[1] + region[3]),
                               (0, 0, 255), 1)
-                if frame_counter % 30 == 0:
-                    # verify_face(face_img.copy())
-                    threading.Thread(target=verify_face, args=(face_img.copy(),)).start()
+                if frame_counter % 24 == 0 and len(face_objs) <= 3:
+                    threading.Thread(target=embed_face, args=(face_img.copy(),)).start()
 
         cv2.imshow("camera", frame)
 

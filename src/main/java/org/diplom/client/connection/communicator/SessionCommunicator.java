@@ -75,12 +75,12 @@ public class SessionCommunicator extends DefaultCommutator {
     }
 
     private void createSessionGostCipher(ScriptMessage message) {
-        byte[] key = Base64.getDecoder().decode(message.getScriptKey());
+        byte[] key = cryptoManager.sessionDecryption(message.getScriptKey());
         byte[][] table = new byte[8][16];
         for (int i = 0; i < 8; i++) {
-            table[i] = Base64.getDecoder().decode(message.getScriptTable().get(i));
+            table[i] = cryptoManager.sessionDecryption(message.getScriptTable().get(i));
         }
-        byte[] syncMessage = Base64.getDecoder().decode(message.getScriptSyncMessage());
+        byte[] syncMessage = cryptoManager.sessionDecryption(message.getScriptSyncMessage());
 
         sessionManager.setSessionGostCipher(new GOST28147_89(key, table, syncMessage));
     }

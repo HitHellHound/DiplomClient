@@ -1,6 +1,6 @@
 package org.diplom.client.connection.communicator;
 
-import org.diplom.client.connection.SessionManager;
+import org.diplom.client.manager.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;

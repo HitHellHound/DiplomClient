@@ -1,6 +1,7 @@
 package org.diplom.client.crypto;
 
-import org.diplom.client.connection.SessionManager;
+import org.diplom.client.manager.SessionManager;
+import org.diplom.client.dto.ScriptMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +9,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -61,6 +61,17 @@ public class CryptoManager {
         } catch (BadPaddingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void createScriptGostCipher(ScriptMessage message) {
+        byte[] key = sessionDecryption(message.getScriptKey());
+        byte[][] table = new byte[8][16];
+        for (int i = 0; i < 8; i++) {
+            table[i] = sessionDecryption(message.getScriptTable().get(i));
+        }
+        byte[] syncMessage = sessionDecryption(message.getScriptSyncMessage());
+
+        sessionManager.setScriptGostCipher(new GOST28147_89(key, table, syncMessage));
     }
 
     public KeyPair generateSessionKeys() {
